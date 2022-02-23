@@ -8,8 +8,12 @@
 </head>
 <body>
 	<h1>Bem vindo ao curso de JSP</h1>
-	<%
-	out.print("seu sucesso garantido");
-	%>
+	
+	<form action="receber-nome.jsp">
+	<input name="nome">
+	<input name="idade">
+	<input type="submit" value="Enviar">
+	
+	</form>
 </body>
 </html>
