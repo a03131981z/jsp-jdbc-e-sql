@@ -10,7 +10,7 @@
 	<%
 	String nome = request.getParameter("nome");
 	out.println("Nome: "+nome);
-	
+
 	int idade = Integer.parseInt(request.getParameter("idade"));
 	out.println("Idade: "+idade);
 	%>
