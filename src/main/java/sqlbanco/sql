@@ -1,0 +1,31 @@
+CREATE DATABASE curso_jsp
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'pt_BR.utf8'
+    LC_CTYPE = 'pt_BR.utf8'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+
+GRANT ALL ON DATABASE curso_jsp TO postgres;
+
+GRANT TEMPORARY, CONNECT ON DATABASE curso_jsp TO PUBLIC;
+
+GRANT ALL ON DATABASE curso_jsp TO admin;
+
+
+CREATE TABLE public.model_login
+(
+    login character varying(200) COLLATE pg_catalog."default",
+    senha character varying(200) COLLATE pg_catalog."default",
+    CONSTRAINT login_unique UNIQUE (login)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.model_login
+    OWNER to admin;
+    
+INSERT INTO public.model_login(
+	login, senha)
+	VALUES ('admin', 'admin');

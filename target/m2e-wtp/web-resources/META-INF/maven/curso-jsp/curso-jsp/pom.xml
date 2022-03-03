@@ -7,16 +7,21 @@
   <name>curso-jsp</name>
   <description>curso jsp jdev treinamento</description>
   
-  <!--dependencies>
+  <dependencies>
+  	<dependency>
+    	<groupId>org.postgresql</groupId>
+    	<artifactId>postgresql</artifactId>
+    	<version>42.3.3</version>
+	</dependency>
  
-	dependency>
+	<!--<>dependency>
     	<groupId>javax.servlet</groupId>
     	<artifactId>javax.servlet-api</artifactId>
     	<version>4.0.1</version>
     	<scope>provided</scope>
-	</dependency> 
+	</dependency>--> 
 
-  </dependencies>-->
+  </dependencies>
   
   <build>
     <plugins>
