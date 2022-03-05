@@ -39,7 +39,7 @@
                                     <div class="page-body">
                                     <div class="row">
                                     	<h1>Conteúdo das páginas bases das páginas do sistema</h1>
-                                </div>
+                                	</div>
                                 <div id="styleSelector"> </div>
                             </div>
                         </div>
