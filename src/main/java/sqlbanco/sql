@@ -7,21 +7,19 @@ CREATE DATABASE curso_jsp
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
 
-GRANT ALL ON DATABASE curso_jsp TO postgres;
-
-GRANT TEMPORARY, CONNECT ON DATABASE curso_jsp TO PUBLIC;
-
-GRANT ALL ON DATABASE curso_jsp TO admin;
-
-
-CREATE TABLE public.model_login
-(
-    login character varying(200) COLLATE pg_catalog."default",
-    senha character varying(200) COLLATE pg_catalog."default",
-    CONSTRAINT login_unique UNIQUE (login)
+CREATE TABLE public.model_login(
+	login character varying(200) NOT NULL,
+	senha character varying(200) NOT NULL,
+	id integer NOT NULL default nextval('model_login_id_seq'::regclass),
+	nome character varying(300) NOT NULL,
+	email character varying(300) NOT NULL,
+	CONSTRAINT model_login_pkey PRIMARY KEY (id),
+	CONSTRAINT login_unique UNIQUE (login)
 )
 
-TABLESPACE pg_default;
+WITH(
+	OIDS=FALSE
+)
 
 ALTER TABLE public.model_login
     OWNER to admin;
