@@ -3,6 +3,7 @@ package servlets;
 import java.io.IOException;
 
 import dao.DAOLoginRepository;
+import filter.FilterAutenticacao;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
