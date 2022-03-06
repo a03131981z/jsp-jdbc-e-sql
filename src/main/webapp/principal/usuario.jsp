@@ -88,6 +88,8 @@
                                     		</div>
                                     	</div>
                                     	
+                                    	<span>"${msg}"</span>
+                                    	
                                 <div id="styleSelector"> </div>
                             </div>
                         </div>
