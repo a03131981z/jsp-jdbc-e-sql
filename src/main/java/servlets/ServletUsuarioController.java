@@ -52,7 +52,6 @@ public class ServletUsuarioController extends HttpServlet {
 				for(ModelLogin user: dadosJsonUser) {
 					System.out.println(user.getNome());
 				}
-				response.getWriter().write("Excluído com sucesso!");
 				
 			}else {
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
