@@ -3,25 +3,31 @@ package servlets;
 import java.io.IOException;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.tomcat.jakartaee.commons.compress.utils.IOUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
-import dao.DAOUsuarioRepository;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.DAOUsuarioRepository;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
 import model.ModelLogin;
 
-@WebServlet("/ServletUsuarioController")
-public class ServletUsuarioController extends HttpServlet {
+@MultipartConfig
+@WebServlet(urlPatterns = {"/ServletUsuarioController"})
+public class ServletUsuarioController extends ServletGenericUtil{
 	
 	private static final long serialVersionUID = 1L;
     private DAOUsuarioRepository daoUsuarioRepository = new DAOUsuarioRepository();
 	
     public ServletUsuarioController() {
-      
+        
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -33,6 +39,10 @@ public class ServletUsuarioController extends HttpServlet {
 			if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("deletar")) {
 				String idUser = request.getParameter("id");
 				daoUsuarioRepository.deletarUser(idUser);
+				
+				List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
+				request.setAttribute("modelLogin", modelLogins);
+				
 				request.setAttribute("msg", "Excluído com sucesso");
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
 				
@@ -43,7 +53,7 @@ public class ServletUsuarioController extends HttpServlet {
 			
 			}else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarUserAjax")) {
 				String nomeBusca = request.getParameter("nomeBusca");
-				List<ModelLogin> dadosJsonUser = daoUsuarioRepository.consultaUsuarioList(nomeBusca);
+				List<ModelLogin> dadosJsonUser = daoUsuarioRepository.consultaUsuarioList(nomeBusca, super.getUserLogado(request));
 				
 				ObjectMapper mapper = new ObjectMapper();
 				String json = mapper.writeValueAsString(dadosJsonUser);
@@ -55,12 +65,26 @@ public class ServletUsuarioController extends HttpServlet {
 				
 			}else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("buscarEditar")) {
 				String id = request.getParameter("id");
-				ModelLogin modelLogin = daoUsuarioRepository.consultaUsuarioID(id);
+				ModelLogin modelLogin = daoUsuarioRepository.consultaUsuarioID(id, super.getUserLogado(request));
+				
+				List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
+				request.setAttribute("modelLogin", modelLogins);
+				
 				request.setAttribute("msg", "Usuário em edição");
 				request.setAttribute("modelLogin", modelLogin);
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request,  response);
 				
+			}else if(acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("listarUser")) {
+				
+				List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
+				request.setAttribute("msg", "Usuários carregados");
+				request.setAttribute("modelLogins", modelLogins);
+				request.getRequestDispatcher("principal/usuario.jsp").forward(request,  response);
+				
 			}else {
+				
+				List<ModelLogin> modelLogin = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
+				request.setAttribute("modelLogin", modelLogin);
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
 			}
 						
@@ -82,6 +106,8 @@ public class ServletUsuarioController extends HttpServlet {
 			String email = request.getParameter("email");
 			String login = request.getParameter("login");
 			String senha = request.getParameter("senha");
+			String perfil = request.getParameter("perfil");
+			String sexo = request.getParameter("sexo");
 			
 			ModelLogin modelLogin = new ModelLogin();
 			modelLogin.setId(id != null && !id.isEmpty()? Long.parseLong(id): null);
@@ -89,9 +115,23 @@ public class ServletUsuarioController extends HttpServlet {
 			modelLogin.setEmail(email);
 			modelLogin.setLogin(login);
 			modelLogin.setSenha(senha);
+			modelLogin.setPerfil(perfil);
+			modelLogin.setSexo(sexo);
+			
+			if(ServletFileUpload.isMultipartContent(request)) {
+				Part part = request.getPart("fileFoto");/*Pega foto da tela*/
+				
+				if(part.getSize() > 0) {
+					byte [] foto = IOUtils.toByteArray(part.getInputStream()); /*Converte imagem para byte*/
+					String imagemBase64 = "data:image/"+part.getContentType().split("\\/")[1]+";base64,"+ new Base64().encodeBase64String(foto);
+					
+					modelLogin.setFotoUser(imagemBase64);
+					modelLogin.setExtensaoFotoUser(part.getContentType().split("\\/")[1]);
+				}
+			}
 			
 			if(daoUsuarioRepository.validarLogin(modelLogin.getLogin()) && modelLogin.getId() == null) {
-				msg = "Já existe usuário com o mesmo login, informe outro";
+				msg = "Já existe usuário com o mesmo login, informe outro login;";
 			
 			}else {
 				if(modelLogin.isNovo()) {
@@ -100,8 +140,11 @@ public class ServletUsuarioController extends HttpServlet {
 				}else {
 					msg = "Atualizado com sucesso!";
 				}
-				modelLogin = daoUsuarioRepository.gravarUsuario(modelLogin);
+				modelLogin = daoUsuarioRepository.gravarUsuario(modelLogin, super.getUserLogado(request));
 			}
+			
+			List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
+			request.setAttribute("modelLogin", modelLogins);
 			
 			request.setAttribute("msg", msg);
 			request.setAttribute("modelLogin", modelLogin);
@@ -114,5 +157,4 @@ public class ServletUsuarioController extends HttpServlet {
 			redirecionar.forward(request,  response);
 		}
 	}
-
 }

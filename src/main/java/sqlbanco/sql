@@ -1,4 +1,4 @@
-CREATE DATABASE curso_jsp
+CREATE DATABASE curso-jsp
     WITH 
     OWNER = postgres
     ENCODING = 'UTF8'
